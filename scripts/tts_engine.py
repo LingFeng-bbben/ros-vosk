@@ -12,6 +12,9 @@ class tts_engine():
     def __init__(self):
         rospy.Subscriber("tts/phrase", String, self.callback)
         self.pubStatus = rospy.Publisher('tts/status', Bool, queue_size=0)
+        self.engine = pyttsx3.init()
+        self.engine.connect('started-utterance', self.tts_onStart)
+        self.engine.connect('finished-utterance', self.tts_onEnd)
 
     def callback(self, msg):
         phrase = msg.data
@@ -31,9 +34,6 @@ class tts_engine():
     def say(self, phrase):
 
         rospy.loginfo("The robot says: " + phrase)
-        self.engine = pyttsx3.init()
-        self.engine.connect('started-utterance', self.tts_onStart)
-        self.engine.connect('finished-utterance', self.tts_onEnd)
         self.engine.say(phrase,"tts_engine")
         self.engine.runAndWait()
 
